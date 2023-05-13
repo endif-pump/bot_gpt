@@ -2,13 +2,10 @@
 .SILENT: start stop test
 
 start:
-	CONFIG=config.$(name).yml nohup env/bin/python -m bot.bot > $(name).log 2>&1 & echo $$! > $(name).pid
-	echo "Started $(name) bot"
+	docker-compose up --build -d
 
 stop:
-	kill $(shell cat $(name).pid)
-	rm -f $(name).pid
-	echo "Stopped $(name) bot"
+	docker-compose down
 
 test:
 	env/bin/python -m unittest discover
