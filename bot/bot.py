@@ -138,25 +138,31 @@ def with_message_limit(func):
 async def reply_to(message: Message, context: CallbackContext, question: str) -> None:
     """Replies to a specific question."""
     await message.chat.send_action(action="typing", message_thread_id=message.message_thread_id)
+    bot_replied = True
+    while(bot_replied):
+        try:
+            asker = askers.create(question)
+            if message.chat.type == Chat.PRIVATE and message.forward_date:
+                # this is a forwarded message, don't answer yet
+                answer = "This is a forwarded message. What should I do with it?"
+            else:
+                answer = await _ask_question(message, context, question, asker)
 
-    try:
-        asker = askers.create(question)
-        if message.chat.type == Chat.PRIVATE and message.forward_date:
-            # this is a forwarded message, don't answer yet
-            answer = "This is a forwarded message. What should I do with it?"
-        else:
-            answer = await _ask_question(message, context, question, asker)
+            user = UserData(context.user_data)
+            user.messages.add(question, answer)
+            logger.debug(user.messages)
+            await asker.reply(message, context, answer)
+            bot_replied = False
 
-        user = UserData(context.user_data)
-        user.messages.add(question, answer)
-        logger.debug(user.messages)
-        await asker.reply(message, context, answer)
-
-    except Exception as exc:
-        class_name = f"{exc.__class__.__module__}.{exc.__class__.__qualname__}"
-        error_text = f"Failed to answer. Reason: {class_name}: {exc}"
-        logger.error(error_text)
-        await message.reply_text(error_text)
+        except Exception as exc:
+            class_name = f"{exc.__class__.__module__}.{exc.__class__.__qualname__}"
+            error_text = f"Failed to answer. Reason: {class_name}: {exc}"
+            logger.error(error_text)
+            await message.reply_text("Wait pls...")
+            if "openai.error.RateLimitError" in error_text:
+                bot_replied = True
+                time.sleep(10)
+            
 
 
 async def _ask_question(
