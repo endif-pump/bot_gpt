@@ -33,8 +33,8 @@ class ImagineCommand:
 
         if not context.args:
             await message.reply_text(
-                "Please describe an image. "
-                "For example:\n<code>/imagine a lazy cat on a sunny day</code>",
+                "Опишите изображение. "
+                "Пример:\n<code>/imagine котик в солнечный день</code>",
                 parse_mode=ParseMode.HTML,
             )
             return
