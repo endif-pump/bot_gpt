@@ -158,7 +158,7 @@ async def reply_to(message: Message, context: CallbackContext, question: str) ->
             class_name = f"{exc.__class__.__module__}.{exc.__class__.__qualname__}"
             error_text = f"Failed to answer. Reason: {class_name}: {exc}"
             logger.error(error_text)
-            await message.reply_text("Wait pls...")
+            await message.reply_text("Подождите обрабатываю запрос...")
             if "openai.error.RateLimitError" in error_text:
                 bot_replied = True
                 time.sleep(10)
