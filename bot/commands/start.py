@@ -15,8 +15,7 @@ class StartCommand:
     async def __call__(self, update: Update, context: CallbackContext) -> None:
         if update.effective_user.username not in config.telegram.usernames:
             text = (
-                "Sorry, I don't know you. To setup your own bot, "
-                "visit https://github.com/nalgeon/pokitoki"
+                "Привет можешь задавать любые вопросы, мне доступна инфа до 2021 года."
             )
             await update.message.reply_text(text)
             return
