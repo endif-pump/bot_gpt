@@ -15,7 +15,7 @@ class StartCommand:
     async def __call__(self, update: Update, context: CallbackContext) -> None:
         if update.effective_user.username not in config.telegram.usernames:
             text = (
-                "Привет можешь задавать любые вопросы, мне доступна инфа до 2021 года."
+                "Привет можешь задавать любые вопросы, мне доступна инфа до 2021 года. Если хочешь, чтобы я поддерживал контекст вопросов, то задавай связанные вопросы отвечая на мои ответы, это стандартная механика для телеграм."
             )
             await update.message.reply_text(text)
             return
