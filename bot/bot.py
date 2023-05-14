@@ -158,11 +158,19 @@ async def reply_to(message: Message, context: CallbackContext, question: str) ->
             class_name = f"{exc.__class__.__module__}.{exc.__class__.__qualname__}"
             error_text = f"Failed to answer. Reason: {class_name}: {exc}"
             logger.error(error_text)
-            await message.reply_text("Подождите обрабатываю запрос...")
-            if "openai.error.RateLimitError" in error_text:
+            
+            if "Limit: 3 / min" in error_text:
+                await message.reply_text("Подождите обрабатываю запрос...")
                 bot_replied = True
                 time.sleep(10)
             
+            if "Limit: 5/1min" in error_text:
+                await message.reply_text("Повторите запрос позже (через 1 минуту)")
+                bot_replied = False
+                
+            if "openai.error.InvalidRequestError" in error_text:
+                await message.reply_text("Ваш запрос был отклонен из-за нашей системы безопасности")
+                bot_replied = False
 
 
 async def _ask_question(
